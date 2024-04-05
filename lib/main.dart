@@ -114,6 +114,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            SizedBox(height: 10.0),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Save to ...",
+                      labelText: "Path",
+                    ),
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),
