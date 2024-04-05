@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,8 +34,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _inputLink = "";
-  String _outputPath = ".";
+  final TextEditingController _inputLinkController = TextEditingController();
+  final TextEditingController _outputPathController = TextEditingController();
   bool _isDownloading = false;
   Future<void> _downloadMusic() async {
     setState(() {
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // 下载
     try {
       RegExp regExp = RegExp(r'id=([^&]+)');
-      final match = regExp.firstMatch(_inputLink);
+      final match = regExp.firstMatch(_inputLinkController.text);
       String? idValue = match?.group(1);
 
       if (idValue == null || idValue.isEmpty) {
@@ -57,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final response = await get(Uri.parse(downloadLink));
       if (response.statusCode == 200) {
-        final directory = _outputPath;
+        final directory = _outputPathController.text;
         final musicName = "music";
         final musicExtension = "mp3";
         final filePath = '$directory/$musicName.$musicExtension';
@@ -95,15 +96,11 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _inputLinkController,
                     decoration: InputDecoration(
                       hintText: "Input music link.",
                       labelText: "Link",
                     ),
-                    onChanged: (text) {
-                      setState(() {
-                        _inputLink = text;
-                      });
-                    },
                   ),
                 ),
                 SizedBox(width: 10.0),
@@ -119,11 +116,25 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _outputPathController,
                     decoration: InputDecoration(
                       hintText: "Save to ...",
                       labelText: "Path",
                     ),
                   ),
+                ),
+                SizedBox(width: 10.0),
+                FloatingActionButton.extended(
+                  icon: Icon(Icons.save),
+                  onPressed: () async {
+                    var dir = await FilePicker.platform.getDirectoryPath();
+                    if (dir != null) {
+                      setState(() {
+                        _outputPathController.text = dir;
+                      });
+                    }
+                  },
+                  label: Text("保存到"),
                 )
               ],
             )
