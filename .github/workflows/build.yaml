@@ -26,7 +26,7 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                 name: linux-build
-                path: build/linux/
+                path: build/linux/bundle/
     windows:
         runs-on: windows-latest
         permissions:
@@ -48,4 +48,4 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                 name: windows-build
-                path: build/windows/
+                path: build/windows/bundle/
