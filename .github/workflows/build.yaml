@@ -22,3 +22,30 @@ jobs:
               run: flutter test
             - name: Build
               run: flutter build linux --release
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: linux-build
+                path: build/linux/
+    windows:
+        runs-on: windows-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup flutter
+              uses: subosito/flutter-action@v2.16.0
+              with:
+                channel: stable
+                flutter-version: 3.19.5
+            - name: Get packages
+              run: flutter pub get
+            - name: Test
+              run: flutter test
+            - name: Build
+              run: flutter build windows --release
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: windows-build
+                path: build/windows/
