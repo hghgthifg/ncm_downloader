@@ -14,6 +14,7 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.19.5
+          cache: true
       - name: Get packages
         run: flutter pub get
       - name: Setup linux environment
@@ -38,6 +39,7 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.19.5
+          cache: true
       - name: Get packages
         run: flutter pub get
       - name: Test
@@ -55,22 +57,19 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      - name: Setup java environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "12.x"
       - name: Setup flutter
         uses: subosito/flutter-action@v2.16.0
         with:
           channel: stable
           flutter-version: 3.19.5
+          cache: true
       - name: Get packages
         run: flutter pub get
-      - name: Setup android environment
-        run: |
-          flutter config --android-sdk $ANDROID_HOME
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "PATH=$PATH:$ANDROID_HOME/tools/bin" >> $GITHUB_ENV
-          flutter sdk-path
-      - name: Accept Android licenses
-        run: |
-          flutter doctor --android-licenses
       - name: Build apk
         run: flutter build apk --release
       - name: Upload build artifacts
