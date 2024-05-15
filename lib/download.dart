@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:audiotags/audiotags.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -53,12 +51,12 @@ class Downloader {
       // Get the metadata
       final title = info['name'];
       final artists =
-          info['artists'].map((artist) => artist['name']).toList().toString();
+          info['artists'].map((artist) => artist['name']).toList().join(',');
       final album = info['album']['name'];
       final albumArtists = info['album']['artists']
           .map((artist) => artist['name'])
           .toList()
-          .toString();
+          .join(',');
       final trackTotal = info['album']['size'];
       final trackNumber = info['no'];
 
@@ -72,15 +70,6 @@ class Downloader {
         },
       );
       final coverBytes = coverResponse.bodyBytes;
-
-      // Get the lyric
-      final lyricResponse = await get(Uri.parse(lyricLink));
-      if (lyricResponse.statusCode == 200) {
-        final lyricInfo = jsonDecode(lyricResponse.body);
-        final lyric = lyricInfo['lrc']['lyric'];
-        final lyricFile = File('$outputPath/$title.lrc');
-        await lyricFile.writeAsString(lyric);
-      }
 
       final Tag tag = Tag(
           title: title,
@@ -115,7 +104,18 @@ class Downloader {
 
       final musicName = title;
       final musicExtension = "mp3";
-      final filePath = '$outputPath/$musicName.$musicExtension';
+      final fileName = '$musicName - $artists';
+      final filePath = '$outputPath/$fileName.$musicExtension';
+
+      // Get the lyric
+      final lyricResponse = await get(Uri.parse(lyricLink));
+      if (lyricResponse.statusCode == 200) {
+        final lyricInfo = jsonDecode(lyricResponse.body);
+        final lyric = lyricInfo['lrc']['lyric'];
+        final lyricFile = File('$outputPath/$fileName.lrc');
+        await lyricFile.writeAsString(lyric);
+      }
+
       final file = File(filePath);
       await file.writeAsBytes(fileResponse.bodyBytes);
       AudioTags.write(filePath, tag);
