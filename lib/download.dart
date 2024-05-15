@@ -41,8 +41,10 @@ class Downloader {
 
   Future<void> _downloadMusic(String id, String outputPath) async {
     final downloadLink = "https://music.163.com/song/media/outer/url?id=$id";
-    final String detailLink =
+    final detailLink =
         "https://music.163.com/api/song/detail/?id=$id&ids=[$id]";
+    final lyricLink =
+        "https://music.163.com/api/song/lyric?id=$id&lv=1&kv=1&tv=-1";
 
     final detailResponse = await get(Uri.parse(detailLink));
     if (detailResponse.statusCode == 200) {
@@ -70,6 +72,15 @@ class Downloader {
         },
       );
       final coverBytes = coverResponse.bodyBytes;
+
+      // Get the lyric
+      final lyricResponse = await get(Uri.parse(lyricLink));
+      if (lyricResponse.statusCode == 200) {
+        final lyricInfo = jsonDecode(lyricResponse.body);
+        final lyric = lyricInfo['lrc']['lyric'];
+        final lyricFile = File('$outputPath/$title.lrc');
+        await lyricFile.writeAsString(lyric);
+      }
 
       final Tag tag = Tag(
           title: title,

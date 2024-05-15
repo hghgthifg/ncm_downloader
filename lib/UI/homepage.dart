@@ -55,7 +55,7 @@ class _HomePageUIState extends State<HomePageUI> {
                   child: TextField(
                     controller: _inputLinkController,
                     decoration: InputDecoration(
-                      hintText: "Input music link.",
+                      hintText: "输入音乐链接",
                       labelText: "Link",
                     ),
                   ),
@@ -76,7 +76,7 @@ class _HomePageUIState extends State<HomePageUI> {
                   child: TextField(
                     controller: _outputPathController,
                     decoration: InputDecoration(
-                      hintText: "Save to ...",
+                      hintText: "保存到",
                       labelText: "Path",
                     ),
                   ),
