@@ -12,12 +12,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NCM Downloader',
+      title: '网易云下载器',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'NCM Downloader'),
+      home: const HomePage(title: '网易云下载器'),
     );
   }
 }
