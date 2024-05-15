@@ -3,49 +3,78 @@ name: build
 on: [push, pull_request]
 
 jobs:
-    linux:
-        runs-on: ubuntu-20.04
-        permissions:
-            contents: write
-        steps:
-            - uses: actions/checkout@v3
-            - name: Setup flutter
-              uses: subosito/flutter-action@v2.16.0
-              with:
-                channel: stable
-                flutter-version: 3.19.5
-            - name: Get packages
-              run: flutter pub get
-            - name: Setup linux environment
-              run: sudo apt-get install clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev
-            - name: Test
-              run: flutter test
-            - name: Build
-              run: flutter build linux --release
-            - name: Upload build artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                name: linux-build
-                path: build/linux/x64/release/bundle
-    windows:
-        runs-on: windows-latest
-        permissions:
-            contents: write
-        steps:
-            - uses: actions/checkout@v3
-            - name: Setup flutter
-              uses: subosito/flutter-action@v2.16.0
-              with:
-                channel: stable
-                flutter-version: 3.19.5
-            - name: Get packages
-              run: flutter pub get
-            - name: Test
-              run: flutter test
-            - name: Build
-              run: flutter build windows --release
-            - name: Upload build artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                name: windows-build
-                path: build/windows/x64/runner/Release/
+  linux:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2.16.0
+        with:
+          channel: stable
+          flutter-version: 3.19.5
+      - name: Get packages
+        run: flutter pub get
+      - name: Setup linux environment
+        run: sudo apt-get install clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev
+      - name: Test
+        run: flutter test
+      - name: Build
+        run: flutter build linux --release
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-build
+          path: build/linux/x64/release/bundle
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2.16.0
+        with:
+          channel: stable
+          flutter-version: 3.19.5
+      - name: Get packages
+        run: flutter pub get
+      - name: Test
+        run: flutter test
+      - name: Build
+        run: flutter build windows --release
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: build/windows/x64/runner/Release/
+  android:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2.16.0
+        with:
+          channel: stable
+          flutter-version: 3.19.5
+      - name: Get packages
+        run: flutter pub get
+      - name: Setup android environment
+        run: |
+          flutter config --android-sdk $ANDROID_HOME
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/tools/bin" >> $GITHUB_ENV
+          flutter sdk-path
+      - name: Accept Android licenses
+        run: |
+          flutter doctor --android-licenses
+      - name: Build apk
+        run: flutter build apk --release
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-build
+          path: build/app/outputs/flutter-apk/
